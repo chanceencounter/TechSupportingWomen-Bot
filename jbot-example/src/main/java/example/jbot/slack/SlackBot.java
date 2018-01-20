@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
+import java.util.*;
 
 import java.util.regex.Matcher;
 
@@ -123,13 +124,55 @@ public class SlackBot extends Bot {
         if (event.getText().matches("^.*?(?i)(suicide|suicidal|bitcoin|ether).*")) {
           reply(session, event, new Message("I recommend that you call the National Suicide Hotline at 1-800-273-8255."));
           stopConversation(event);
-
+        } else if (event.getText().matches("^.*?(?i)(postpartum|depression).*")) {
+            reply(session, event, new Message("I recommend that you call the English/Spanish support line: 1-800-944-4773"));
+            stopConversation(event);
         } else if (event.getText().matches("^.*?(?i)(test|testing).*")) {
           reply(session, event, new Message("Hi, thanks for your test message."));
           stopConversation(event);
-        } else {
-          reply(session, event, new Message("You did not use a valid command."));
-          stopConversation(event);
+        }
+    }
+
+    @Controller
+    public void helpAdvice(WebSocketSession session, Event event, String[] args) {
+        List<String> advice = new ArrayList<String>(5);
+
+        advice.add("Take a deep breath");
+        advice.add("If you think you may have post partum depression, read more at www.postpartum.net");
+        advice.add("Drink a glass of water");
+        advice.add("Call up a friend");
+        advice.add("Make sure you are getting enough sleep");
+
+        Random rand = new Random();
+        int num = rand.nextInt(5);
+
+        if (event.getText().matches("^.*?(?i)(advice|tips).*")) {
+            reply(session, event, new Message(advice.get(num)));
+            stopConversation(event);
+
+        } else if (event.getText().matches("^.*?(?i)(test|testing).*")) {
+            reply(session, event, new Message("Hi, thanks for your test message."));
+            stopConversation(event);
+        }
+    }
+
+
+    @Controller
+    public void helpSymptoms(WebSocketSession session, Event event) {
+        if (event.getText().matches("^.*?(?i)(facts|symptoms|postpartum).*")) {
+            reply(session, event, new
+                    Message("Symptoms include: " +
+                    " Obsessive or intensive thoughts," +
+                    " compulsions, " +
+                    " feeling fear of being left" +
+                    " alone with your baby," +
+                    " hypervigilance in protecting your baby.\n" +
+                    " If you think you need help please reach out: + type 'help me' for more info "
+            ));
+            stopConversation(event);
+        } else if (event.getText().matches("^.*?(?i)(test|testing).*")) {
+            reply(session, event, new Message("Hi, thanks for your test message."));
+            stopConversation(event);
         }
     }
 
