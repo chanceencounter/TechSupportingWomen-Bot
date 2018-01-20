@@ -120,7 +120,7 @@ public class SlackBot extends Bot {
 
     @Controller
     public void helpQuestion(WebSocketSession session, Event event) {
-        if (event.getText().matches("^.*?(?i)(suicide|suicidal).*")) {
+        if (event.getText().matches("^.*?(?i)(suicide|suicidal|bitcoin|ether).*")) {
           reply(session, event, new Message("I recommend that you call the National Suicide Hotline at 1-800-273-8255."));
           stopConversation(event);
 
@@ -132,4 +132,38 @@ public class SlackBot extends Bot {
           stopConversation(event);
         }
     }
+
+  @Controller(pattern ="(mood)", next = "moodHelp")
+  public  void currentMood(WebSocketSession session, Event event) {
+    startConversation(event, "moodHelp");   // start conversation
+    reply(session, event, new Message("How are you doing today?"));
+  }
+
+  @Controller(next = "checkBadMood")
+  public void moodHelp(WebSocketSession session, Event event) {
+    if (event.getText().matches("^.*?(?i)(happy|good|great).*")) {
+      reply(session, event, new Message("That's great, I'm glad your day is going well!"));
+      stopConversation(event);
+    } else if (event.getText().matches("^.*?(?i)(sad|not good|not great|bad).*")) {
+      reply(session, event, new Message("I'm sorry about that, what's wrong?"));
+      nextConversation(event);
+    } else {
+      reply(session, event, new Message("Invalid input, sorry."));
+      stopConversation(event);
+    }
+  }
+
+  @Controller
+  public void checkBadMood(WebSocketSession session, Event event) {
+    if (event.getText().matches("^.*?(?i)(work|manager).*")) {
+      reply(session, event, new Message("I'm sorry, here are a list of designated individuals you can talk to: Jane Doe ext:1234, or you can send an anonymous email to HR here: [placeholder]"));
+      stopConversation(event);
+    } else if (event.getText().matches("^.*?(?i)(personal|home).*")) {
+      reply(session, event, new Message("May I suggest a walk, or talking to a mental health counselor?"));
+      stopConversation(event);
+    } else {
+      reply(session, event, new Message("I'm sorry, I'm not well equipped to handle this problem. We'll do our best here at Ovia Health to address this in the future, you can e-mail [email address] with suggestions, or ask your PCP for recommendations."));
+      stopConversation(event);
+    }
+  }
 }
